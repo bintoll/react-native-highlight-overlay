@@ -54,7 +54,6 @@ function HighlightOverlay({ highlightedElementId, onDismiss }: HighlightOverlayP
 					style={StyleSheet.absoluteFill}
 					pointerEvents={clickThrough ? "none" : "auto"}
 					onPress={!clickThrough ? onDismiss : undefined}
-					key={highlightedElementId}
 				>
 					<G>
 						<Defs>
