@@ -1,4 +1,4 @@
-import type { PropsWithChildren } from "react";
+import { forwardRef, PropsWithChildren, Ref, useImperativeHandle } from "react";
 import React, { useEffect, useRef } from "react";
 import type { HostComponent, StyleProp, ViewStyle } from "react-native";
 import { View } from "react-native";
@@ -18,6 +18,7 @@ export type HighlightableElementProps = PropsWithChildren<{
 	 */
 	options?: HighlightOptions;
 	style?: StyleProp<ViewStyle>;
+	removeElementManually?: boolean
 }>;
 
 /**
@@ -25,10 +26,16 @@ export type HighlightableElementProps = PropsWithChildren<{
  *
  * @since 1.0.0
  */
-function HighlightableElement({ id, options, children, style }: HighlightableElementProps) {
+const HighlightableElement = forwardRef(({ id, options, children, style, removeElementManually }: HighlightableElementProps, highlightableElementRef: Ref<{removeElement: () => void}>) => {
 	const ref = useRef<View | null>(null);
 
 	const [_, { addElement, removeElement, rootRef }] = useHighlightableElements();
+
+	useImperativeHandle(highlightableElementRef, () => ({
+		removeElement: () => {
+			removeElement(id)
+		},
+ }));
 
 	useEffect(() => {
 		const refVal = ref.current;
@@ -53,7 +60,9 @@ function HighlightableElement({ id, options, children, style }: HighlightableEle
 
 		return () => {
 			clearTimeout(timeoutId);
-			removeElement(id);
+			if (!removeElementManually) {
+				removeElement(id)
+			}
 		};
 		// We don't want to re-run this effect when addElement or removeElement changes.
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -64,6 +73,6 @@ function HighlightableElement({ id, options, children, style }: HighlightableEle
 			{children}
 		</View>
 	);
-}
+})
 
-export default HighlightableElement;
+export default HighlightableElement
