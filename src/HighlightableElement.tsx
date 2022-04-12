@@ -26,7 +26,7 @@ export type HighlightableElementProps = PropsWithChildren<{
  *
  * @since 1.0.0
  */
-const HighlightableElement = forwardRef(({ id, options, children, style, removeElementManually }: HighlightableElementProps, highlightableElementRef: Ref<{removeElement: () => void}>) => {
+const HighlightableElement = forwardRef<Ref<{removeElement: () => void}>, HighlightableElementProps>(({ id, options, children, style, removeElementManually }: HighlightableElementProps, highlightableElementRef: Ref<{removeElement: () => void}>) => {
 	const ref = useRef<View | null>(null);
 
 	const [_, { addElement, removeElement, rootRef }] = useHighlightableElements();
