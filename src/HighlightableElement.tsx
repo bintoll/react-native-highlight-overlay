@@ -1,5 +1,5 @@
-import { forwardRef, PropsWithChildren, Ref, useImperativeHandle } from "react";
-import React, { useEffect, useRef } from "react";
+import type { PropsWithChildren, Ref } from "react";
+import React, { forwardRef, useImperativeHandle, useEffect, useRef } from "react";
 import type { HostComponent, StyleProp, ViewStyle } from "react-native";
 import { View } from "react-native";
 
@@ -18,7 +18,7 @@ export type HighlightableElementProps = PropsWithChildren<{
 	 */
 	options?: HighlightOptions;
 	style?: StyleProp<ViewStyle>;
-	removeElementManually?: boolean
+	removeElementManually?: boolean;
 }>;
 
 /**
@@ -26,53 +26,58 @@ export type HighlightableElementProps = PropsWithChildren<{
  *
  * @since 1.0.0
  */
-const HighlightableElement = forwardRef<Ref<{removeElement: () => void}>, HighlightableElementProps>(({ id, options, children, style, removeElementManually }: HighlightableElementProps, highlightableElementRef: Ref<{removeElement: () => void}>) => {
-	const ref = useRef<View | null>(null);
+const HighlightableElement = forwardRef<{ removeElement: () => void }, HighlightableElementProps>(
+	(
+		{ id, options, children, style, removeElementManually }: HighlightableElementProps,
+		highlightableElementRef: Ref<{ removeElement: () => void }>
+	) => {
+		const ref = useRef<View | null>(null);
 
-	const [_, { addElement, removeElement, rootRef }] = useHighlightableElements();
+		const [_, { addElement, removeElement, rootRef }] = useHighlightableElements();
 
-	useImperativeHandle(highlightableElementRef, () => ({
-		removeElement: () => {
-			removeElement(id)
-		},
- }));
+		useImperativeHandle(highlightableElementRef, () => ({
+			removeElement: () => {
+				removeElement(id);
+			},
+		}));
 
-	useEffect(() => {
-		const refVal = ref.current;
-		if (refVal == null || rootRef == null) {
-			return;
-		}
-
-		const timeoutId = setTimeout(() => {
-			ref.current?.measureLayout(
-				// This is a typing error on ReactNative's part. 'rootRef' is a valid reference.
-				rootRef as unknown as HostComponent<unknown>,
-				(x, y, width, height) => {
-					addElement(id, children, { x, y, width, height }, options);
-				},
-				() => {
-					ref.current?.measureInWindow((x, y, width, height) => {
-						addElement(id, children, { x, y, width, height }, options);
-					});
-				}
-			);
-		}, 0);
-
-		return () => {
-			clearTimeout(timeoutId);
-			if (!removeElementManually) {
-				removeElement(id)
+		useEffect(() => {
+			const refVal = ref.current;
+			if (refVal == null || rootRef == null) {
+				return;
 			}
-		};
-		// We don't want to re-run this effect when addElement or removeElement changes.
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [id, children, rootRef]);
 
-	return (
-		<View collapsable={false} ref={ref} style={style}>
-			{children}
-		</View>
-	);
-})
+			const timeoutId = setTimeout(() => {
+				ref.current?.measureLayout(
+					// This is a typing error on ReactNative's part. 'rootRef' is a valid reference.
+					rootRef as unknown as HostComponent<unknown>,
+					(x, y, width, height) => {
+						addElement(id, children, { x, y, width, height }, options);
+					},
+					() => {
+						ref.current?.measureInWindow((x, y, width, height) => {
+							addElement(id, children, { x, y, width, height }, options);
+						});
+					}
+				);
+			}, 0);
 
-export default HighlightableElement
+			return () => {
+				clearTimeout(timeoutId);
+				if (!removeElementManually) {
+					removeElement(id);
+				}
+			};
+			// We don't want to re-run this effect when addElement or removeElement changes.
+			// eslint-disable-next-line react-hooks/exhaustive-deps
+		}, [id, children, rootRef]);
+
+		return (
+			<View collapsable={false} ref={ref} style={style}>
+				{children}
+			</View>
+		);
+	}
+);
+
+export default HighlightableElement;
