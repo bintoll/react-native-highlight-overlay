@@ -1,4 +1,12 @@
+import type { ScaledSize } from "react-native";
+import { Dimensions } from "react-native";
+
 import type { Bounds, ElementsRecord } from "./context/context";
+
+const window: ScaledSize = Dimensions.get("window");
+
+export const windowWidth = window.width;
+export const windowHeight = window.height;
 
 type ElementBounds = {
 	startX: number;
@@ -17,8 +25,8 @@ const constructClipPath = (data: ElementsRecord[string], containerSize: Bounds):
 	const parentBounds = {
 		startX: 0,
 		startY: 0,
-		endX: containerSize.width,
-		endY: containerSize.height,
+		endX: Math.min(containerSize.width, windowWidth),
+		endY: Math.min(containerSize.height, windowHeight),
 	};
 
 	switch (data.options?.mode) {
