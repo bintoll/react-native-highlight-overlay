@@ -45,7 +45,7 @@ function HighlightOverlay({ highlightedElementId, onDismiss }: HighlightOverlayP
 
 	return (
 		<View
-			style={[StyleSheet.absoluteFill, {maxWidth: windowWidth, maxHeight: windowHeight}}
+			style={[StyleSheet.absoluteFill, { maxWidth: windowWidth, maxHeight: windowHeight }]}
 			onLayout={({ nativeEvent: { layout } }) => setParentSize(layout)}
 			pointerEvents="box-none"
 		>
