@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import Svg, { ClipPath, Defs, G, Path, Rect } from "react-native-svg";
 
-import constructClipPath from "./constructClipPath";
+import constructClipPath, { windowHeight, windowWidth } from "./constructClipPath";
 import { useHighlightableElements } from "./context";
 import type { Bounds } from "./context/context";
 
@@ -45,7 +45,7 @@ function HighlightOverlay({ highlightedElementId, onDismiss }: HighlightOverlayP
 
 	return (
 		<View
-			style={StyleSheet.absoluteFill}
+			style={[StyleSheet.absoluteFill, {maxWidth: windowWidth, maxHeight: windowHeight}}
 			onLayout={({ nativeEvent: { layout } }) => setParentSize(layout)}
 			pointerEvents="box-none"
 		>
