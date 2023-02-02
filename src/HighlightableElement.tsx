@@ -55,9 +55,23 @@ const HighlightableElement = forwardRef<{ removeElement: () => void }, Highlight
 						addElement(id, children, { x, y, width, height }, options);
 					},
 					() => {
-						ref.current?.measureInWindow((x, y, width, height) => {
-							addElement(id, children, { x, y, width, height }, options);
-						});
+						if (rootRef) {
+							// measure relatively to root ref
+							(rootRef as unknown as View).measureInWindow((rootRefX, rootRefY) => {
+								ref.current?.measureInWindow((x, y, width, height) => {
+									addElement(
+										id,
+										children,
+										{ x: x - rootRefX, y: y - rootRefY, width, height },
+										options
+									);
+								});
+							});
+						} else {
+							ref.current?.measureInWindow((x, y, width, height) => {
+								addElement(id, children, { x, y, width, height }, options);
+							});
+						}
 					}
 				);
 			}, 0);
